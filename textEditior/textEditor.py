@@ -35,8 +35,17 @@ edit_menu.add_command(label='Undo', accelerator='Ctrl + Z', compound='left')
 edit_menu.add_separator()
 edit_menu.add_command(label='Redo', accelerator='Ctrl + Y', compound='left', underline=1)
 edit_menu.add_separator()
-edit_menu.add_command(label='Cut', accelerator='Ctrl + X', compound='left', underline=1)
+
+
+# implementing the cut function
+def cut():
+    content_text.event_generate("<<Cut>>")
+    return "break"
+# calls the function cut() using command to use this function
+edit_menu.add_command(label='Cut', accelerator='Ctrl + X', compound='left', underline=1, command=cut)
+
 edit_menu.add_command(label='Copy', accelerator='Ctrl + C', compound='left', underline=1)
+
 edit_menu.add_command(label='Paste', accelerator='Ctrl + V', compound='left', underline=1)
 edit_menu.add_separator()
 edit_menu.add_command(label='Find', accelerator='Ctrl + F', compound='left', underline=1)
@@ -45,6 +54,35 @@ edit_menu.add_command(label='Select All', accelerator='Ctrl + A', compound='left
 
 # adding view label to the menu bar
 view_menu = Menu(menu_bar, tearoff=0)
+
+# show the line numbers
+show_line_no = IntVar()
+show_line_no.set(1)
+view_menu.add_checkbutton(label='Show Line Numbers', variable=show_line_no)
+
+# adding a themes menu
+themes_menu = Menu(menu_bar, tearoff=0)
+view_menu.add_cascade(label='Themes', menu=themes_menu)
+
+# colour scheme is defined with dictionary elements
+color_schemes = {
+    'Default': '#000000.#FFFFFF',
+    'Greygarious': '#83406A.#D1D4D1',
+    'Aquamarine': '#5B8340.#D1E7E0',
+    'Bold Beige': '#4B4620.#FFF0E1',
+    'Cobalt Blue': '#ffffBB.#3333aa',
+    'Olive Green': '#D1E7E0.#5B8340',
+    'Night Mode': '#FFFFFF.#000000',
+}
+
+# theme choice is set to a string
+theme_choice = StringVar()
+# sets the default colour to be black and white
+theme_choice.set('Default')
+# for loop to through dictionary
+for k in sorted(color_schemes):
+    # adding a radio button
+    themes_menu.add_radiobutton(label=k, variable=theme_choice)
 menu_bar.add_cascade(label='View', menu=view_menu)
 
 # add about label to the menu bar
@@ -65,8 +103,17 @@ line_number_bar = Text(root, width=4, padx=3, takefocus=0, border=0, background=
 line_number_bar.pack(side='left', fill='y')
 
 # adding the main text widget
-content_text =  Text(root, wrap='word')
+content_text = Text(root, wrap='word')
 content_text.pack(expand='yes', fill='both')
+
+
+# adding in the scroll bar for the content_text
+scroll_bar = Scrollbar(content_text)
+content_text.configure(yscrollcommand=scroll_bar.set)
+scroll_bar.configure(command=content_text.yview)
+scroll_bar.pack(side='right', fill='y')
+
+
 
 
 # all our code goes here
