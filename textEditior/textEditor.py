@@ -69,9 +69,6 @@ edit_menu.add_separator()
 edit_menu.add_command(label='Redo', accelerator='Ctrl+Y', compound='left', underline=1, command=redo)
 edit_menu.add_separator()
 
-
-
-
 # calls the function cut() using command to use this function
 edit_menu.add_command(label='Cut', accelerator='Ctrl+X', compound='left', underline=1, command=cut)
 
