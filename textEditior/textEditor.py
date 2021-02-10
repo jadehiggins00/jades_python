@@ -2,15 +2,48 @@
 # author: jade higgins
 # 09/02/2021
 
-from tkinter import *
+from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, IntVar, \
+    StringVar
 from tkinter import Tk
+
 # adding a const var
 PROGRAM_NAME = 'Jades Text Editor'
 
 root = Tk()
+# establishing the size of the window
+root.geometry('350x350')
+root.title(PROGRAM_NAME)
+
+
+# implementing the cut function
+def cut():
+    content_text.event_generate("<<Cut>>")
+    return "break"
+
+# implementing the copy function
+def copy():
+    content_text.event_generate("<<Copy>>")
+    return "break"
+
+#implementing the paste function
+def paste():
+    content_text.event_generate("<<Paste>>")
+    return "break"
+
+# implementing the Undo function
+def undo():
+    content_text.event_generate("<<Undo>>")
+    return "break"
+
+# implementing the redo function
+# the event var prevents TKinter from pasting info when using ctrl+y and instead redos the action
+def redo(event=None):
+    content_text.event_generate("<<Redo>>")
+    return 'break'
+
+
 # adding the menu bar
 # my_menu = Menu(parent, **options)
-
 #adding menu bar in the widget
 menu_bar = Menu(root)
 # adding the file label to the menu
@@ -18,39 +51,40 @@ file_menu = Menu(menu_bar, tearoff=0)
 # all file menu items will be added here next
 menu_bar.add_cascade(label="File", menu=file_menu)
 # adding menu items
-file_menu.add_command(label='New', accelerator='Ctrl + N', compound='left', underline=1)
+file_menu.add_command(label='New', accelerator='Ctrl+N', compound='left', underline=1)
 # adding a line as a seperator between options
 file_menu.add_separator()
-file_menu.add_command(label='Open', accelerator='Ctrl + O', compound='left', underline=1)
-file_menu.add_command(label='Save', accelerator='Ctrl + S', compound='left', underline=1)
-file_menu.add_command(label='Save as', accelerator='Shift + Ctrl + S', compound='left', underline=1)
+file_menu.add_command(label='Open', accelerator='Ctrl+O', compound='left', underline=1)
+file_menu.add_command(label='Save', accelerator='Ctrl+S', compound='left', underline=1)
+file_menu.add_command(label='Save as', accelerator='Shift + Ctrl+S', compound='left', underline=1)
 file_menu.add_separator()
-file_menu.add_command(label='Exit', accelerator='Alt + F4', compound='left', underline=1)
+file_menu.add_command(label='Exit', accelerator='Alt+F4', compound='left', underline=1)
 
 # adding edit label to the menu bar
 edit_menu = Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label='Edit', menu=edit_menu)
 # adding menu items
-edit_menu.add_command(label='Undo', accelerator='Ctrl + Z', compound='left')
+edit_menu.add_command(label='Undo', accelerator='Ctrl+Z', compound='left', command=undo)
 edit_menu.add_separator()
-edit_menu.add_command(label='Redo', accelerator='Ctrl + Y', compound='left', underline=1)
+edit_menu.add_command(label='Redo', accelerator='Ctrl+Y', compound='left', underline=1, command=redo)
 edit_menu.add_separator()
 
 
-# implementing the cut function
-def cut():
-    content_text.event_generate("<<Cut>>")
-    return "break"
+
+
 # calls the function cut() using command to use this function
-edit_menu.add_command(label='Cut', accelerator='Ctrl + X', compound='left', underline=1, command=cut)
+edit_menu.add_command(label='Cut', accelerator='Ctrl+X', compound='left', underline=1, command=cut)
 
-edit_menu.add_command(label='Copy', accelerator='Ctrl + C', compound='left', underline=1)
+# calls the function copy() using the command to use this function
+edit_menu.add_command(label='Copy', accelerator='Ctrl+C', compound='left', underline=1, command=copy)
 
-edit_menu.add_command(label='Paste', accelerator='Ctrl + V', compound='left', underline=1)
+# calls the function paste() using the command to use this function
+edit_menu.add_command(label='Paste', accelerator='Ctrl+V', compound='left', underline=1, command=paste)
+
 edit_menu.add_separator()
-edit_menu.add_command(label='Find', accelerator='Ctrl + F', compound='left', underline=1)
+edit_menu.add_command(label='Find', accelerator='Ctrl+F', compound='left', underline=1)
 edit_menu.add_separator()
-edit_menu.add_command(label='Select All', accelerator='Ctrl + A', compound='left', underline=1)
+edit_menu.add_command(label='Select All', accelerator='Ctrl+A', compound='left', underline=1)
 
 # adding view label to the menu bar
 view_menu = Menu(menu_bar, tearoff=0)
@@ -103,7 +137,7 @@ line_number_bar = Text(root, width=4, padx=3, takefocus=0, border=0, background=
 line_number_bar.pack(side='left', fill='y')
 
 # adding the main text widget
-content_text = Text(root, wrap='word')
+content_text = Text(root, wrap='word', undo=1)
 content_text.pack(expand='yes', fill='both')
 
 
@@ -113,11 +147,13 @@ content_text.configure(yscrollcommand=scroll_bar.set)
 scroll_bar.configure(command=content_text.yview)
 scroll_bar.pack(side='right', fill='y')
 
-
+# handling redo quirk
+content_text.bind('<Control-y>', redo) # handling lowercase
+content_text.bind('Control-Y', redo) # handling Uppercase
 
 
 # all our code goes here
-root.title(PROGRAM_NAME)
+
 root.mainloop()
 
 
