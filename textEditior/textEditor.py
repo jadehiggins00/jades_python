@@ -41,6 +41,10 @@ def redo(event=None):
     content_text.event_generate("<<Redo>>")
     return 'break'
 
+# implementing the select all feature
+def select_all(event=None):
+    content_text.tag_
+
 
 # adding the menu bar
 # my_menu = Menu(parent, **options)
