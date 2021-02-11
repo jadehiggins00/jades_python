@@ -2,8 +2,9 @@
 # author: jade higgins
 # 09/02/2021
 
-from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, IntVar, \
+from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar,Checkbutton,Button, Label, Entry, IntVar, \
     StringVar
+# from tkinter import *
 from tkinter import Tk
 
 # adding a const var
@@ -47,6 +48,32 @@ def select_all(event=None):
     content_text.tag_add('sel', 1.0, 'end');
     return "break"
 
+#implementing the find all function
+def find_all(event=None):
+    # creating a new top level window to search for words
+    search_toplevel = Tk.Toplevel(root)
+    # giving the window a title
+    search_toplevel.title('Find Text')
+    # setting the window as a transient window so it can lie on top of the parent window
+    search_toplevel.transient(root)
+    # adding a label for the window
+    Label(search_toplevel, text="Find All:").grid(row=0, column=0, sticky='e')
+    # adding an entry field
+    search_entry_widget = Entry(search_toplevel, width=25)
+    # positioning the entry field
+    search_entry_widget.grid(row=0, column=1, padx=2, pady=2, sticky='we')
+    # focus_set is used to set focus on a widget
+    search_entry_widget.focus_set()
+    # this var is used to track what the user enters
+    ignore_case_value = IntVar()
+    # adding a check button for ignore case feature
+    Checkbutton(search_toplevel, text='Ignore Case', variable=ignore_case_value).grid(row=1,column=1, sticky='e', padx=2,pady=2)
+    # adding a button for find all - lambda can take a number of arguments ( like a small function
+    # calls search_output
+    Button(search_toplevel, text='Find All', underline=0,
+           command=lambda : search_output(search_entry_widget.get(), ignore_case_value.get(),
+                                          content_text, search_toplevel, search_entry_widget)
+           ).grid(row=0,column=2, sticky='e' + 'w', padx=2, pady=2)
 
 
 # adding the menu bar
@@ -86,7 +113,8 @@ edit_menu.add_command(label='Copy', accelerator='Ctrl+C', compound='left', under
 edit_menu.add_command(label='Paste', accelerator='Ctrl+V', compound='left', underline=1, command=paste)
 
 edit_menu.add_separator()
-edit_menu.add_command(label='Find', accelerator='Ctrl+F', compound='left', underline=1)
+# adding a callback to the find_text function
+edit_menu.add_command(label='Find', accelerator='Ctrl+F', compound='left', underline=1, command=find_all)
 edit_menu.add_separator()
 # adding a callback to the select function
 edit_menu.add_command(label='Select All', accelerator='Ctrl+A', compound='left', underline=1, command=select_all)
@@ -159,6 +187,10 @@ content_text.bind('Control-Y', redo) # handling Uppercase
 # binding the function to the ctrl-a quirk for select all
 content_text.bind('<Control-a>', select_all) # handling lowercase
 content_text.bind('<Control-A>', select_all)
+
+# binding the function to the ctrl-f quirk for find all function
+content_text.bind('<Control-f>', find_all) # handling lowercase
+content_text.bind('<Control-F>', find_all) # handling uppercase
 
 
 # all our code goes here
