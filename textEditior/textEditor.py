@@ -43,7 +43,10 @@ def redo(event=None):
 
 # implementing the select all feature
 def select_all(event=None):
-    content_text.tag_
+    # sel is used for selecting text. 1.0 and end means select beginning until the end
+    content_text.tag_add('sel', 1.0, 'end');
+    return "break"
+
 
 
 # adding the menu bar
@@ -85,7 +88,8 @@ edit_menu.add_command(label='Paste', accelerator='Ctrl+V', compound='left', unde
 edit_menu.add_separator()
 edit_menu.add_command(label='Find', accelerator='Ctrl+F', compound='left', underline=1)
 edit_menu.add_separator()
-edit_menu.add_command(label='Select All', accelerator='Ctrl+A', compound='left', underline=1)
+# adding a callback to the select function
+edit_menu.add_command(label='Select All', accelerator='Ctrl+A', compound='left', underline=1, command=select_all)
 
 # adding view label to the menu bar
 view_menu = Menu(menu_bar, tearoff=0)
@@ -151,6 +155,10 @@ scroll_bar.pack(side='right', fill='y')
 # handling redo quirk
 content_text.bind('<Control-y>', redo) # handling lowercase
 content_text.bind('Control-Y', redo) # handling Uppercase
+
+# binding the function to the ctrl-a quirk for select all
+content_text.bind('<Control-a>', select_all) # handling lowercase
+content_text.bind('<Control-A>', select_all)
 
 
 # all our code goes here
