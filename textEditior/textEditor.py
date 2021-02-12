@@ -2,7 +2,7 @@
 # author: jade higgins
 # 09/02/2021
 
-from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar,Checkbutton,Button, Label, Entry, IntVar, \
+from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar,Checkbutton,Button, END, Label, Entry, IntVar, \
     StringVar
 # from tkinter import *
 from tkinter import Tk
@@ -74,7 +74,26 @@ def find_all(event=None):
            command=lambda : search_output(search_entry_widget.get(), ignore_case_value.get(),
                                           content_text, search_toplevel, search_entry_widget)
            ).grid(row=0,column=2, sticky='e' + 'w', padx=2, pady=2)
+    # adding the function close_search_window which takes care of removing the match tag that
+    # was added during the search. used to override the close button
+    def close_search_window():
+        # removing the match tag
+        content_text.tag_remove('match', '1.0', END)
+        # destroying the toplevel window
+        search_toplevel.destroy()
 
+    # used to close the window and calling the function close_search_window()
+    search_toplevel.protocol('WM_DELETE_WINDOW', close_search_window)
+    return "break"
+
+# defining the search function which performs the search
+# and adds the match tag to the matching text
+def search_output(needle, if_ignore_case, content_text, search_toplevel, search_box):
+    # removes previous search related match tags, if there are any
+    content_text.tag_remove('match', '1.0', END)
+    # intialising this to be 0
+    matches_found = 0
+    
 
 # adding the menu bar
 # my_menu = Menu(parent, **options)
