@@ -2,7 +2,7 @@
 # author: jade higgins
 # 09/02/2021
 
-from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar,Checkbutton,Button, END, Label, Entry, IntVar, \
+from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, Button, END ,Toplevel, Label, Entry, IntVar, \
     StringVar
 # from tkinter import *
 from tkinter import Tk
@@ -12,7 +12,7 @@ PROGRAM_NAME = 'Jades Text Editor'
 
 root = Tk()
 # establishing the size of the window
-root.geometry('350x350')
+root.geometry('500x500')
 root.title(PROGRAM_NAME)
 
 
@@ -51,7 +51,7 @@ def select_all(event=None):
 #implementing the find all function
 def find_all(event=None):
     # creating a new top level window to search for words
-    search_toplevel = Tk.Toplevel(root)
+    search_toplevel = Toplevel(root)
     # giving the window a title
     search_toplevel.title('Find Text')
     # setting the window as a transient window so it can lie on top of the parent window
@@ -71,7 +71,7 @@ def find_all(event=None):
     # adding a button for find all - lambda can take a number of arguments ( like a small function
     # calls search_output
     Button(search_toplevel, text='Find All', underline=0,
-           command=lambda : search_output(search_entry_widget.get(), ignore_case_value.get(),
+           command=lambda: search_output(search_entry_widget.get(), ignore_case_value.get(),
                                           content_text, search_toplevel, search_entry_widget)
            ).grid(row=0,column=2, sticky='e' + 'w', padx=2, pady=2)
     # adding the function close_search_window which takes care of removing the match tag that
@@ -93,7 +93,31 @@ def search_output(needle, if_ignore_case, content_text, search_toplevel, search_
     content_text.tag_remove('match', '1.0', END)
     # intialising this to be 0
     matches_found = 0
-    
+    if needle:
+        # storing the first position of the first match in this var
+        start_pos = '1.0'
+        # we can search through the entire document using a while True loop
+        # the loop keeps track of matches using the count var
+        while True:
+            # uses a search function and calculates the position of the last character in the matched word
+            # and stores it in the end_pos var
+            start_pos = content_text.search(needle, start_pos, nocase=if_ignore_case, stopindex=END)
+            if not start_pos:
+                break
+            end_pos = '{}+{}c'.format(start_pos, len(needle))
+            # for every match found it adds the match tag to the text ranging from
+            # the first position to the last position
+            content_text.tag_add('match', start_pos, end_pos)
+            # after every match we set the value to the start pos to be the end pos
+            matches_found += 1
+            start_pos = end_pos
+        # tag match configured to have a red font and yellow background
+        content_text.tag_config('match', foreground='red', background='yellow')
+
+    # updating the title of the find window to show the number of matches
+    # sets focus on search box element
+    search_box.focus_set()
+    search_toplevel.title('{} matches found'.format(matches_found))
 
 # adding the menu bar
 # my_menu = Menu(parent, **options)
