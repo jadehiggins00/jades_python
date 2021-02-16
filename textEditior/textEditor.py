@@ -6,9 +6,16 @@ from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, B
     StringVar
 # from tkinter import *
 from tkinter import Tk
-
+# working with files
+import tkinter.filedialog
+import os# for  handling file operations
+import tkinter.messagebox
 # adding a const var
 PROGRAM_NAME = 'Jades Text Editor'
+
+# adding a global var to keep track of the filename of the opened file
+# it is a global var because we want other methods to be able to access it
+file_name = None
 
 root = Tk()
 # establishing the size of the window
@@ -86,6 +93,7 @@ def find_all(event=None):
     search_toplevel.protocol('WM_DELETE_WINDOW', close_search_window)
     return "break"
 
+
 # defining the search function which performs the search
 # and adds the match tag to the matching text
 def search_output(needle, if_ignore_case, content_text, search_toplevel, search_box):
@@ -119,6 +127,75 @@ def search_output(needle, if_ignore_case, content_text, search_toplevel, search_
     search_box.focus_set()
     search_toplevel.title('{} matches found'.format(matches_found))
 
+# this returns the opened file object
+# file_object = tkinter.filedialog.askopenfile(mode='r')
+
+# implementing the open file function
+def open_file(event=None):
+    # we use askopenfilename to fetch the file name of the opened file.
+    input_file_name = tkinter.filedialog.askopenfilename(defaultextension='.txt',
+        filetypes=[('All Files', '*.*'), ('Text Documents', '*.txt')])
+    if input_file_name:
+        global file_name
+        file_name = input_file_name
+        # here we isolate the os module and add it as the title of the root window
+        # changes the name of the top bar to be the file name
+        root.title('{} - {}'.format(os.path.basename(file_name),  PROGRAM_NAME))
+        # we open the given file in read mode and insert its content into the content widget
+        with open(file_name) as _file:
+            # we use the context manager ( the with command) which takes care of closing
+            # the file properly for us, even in the case of an exception
+            content_text.insert(1.0, _file.read())
+
+# implementing the save function
+# this function checks whether a file is open
+def save(event=None):
+    global file_name
+    # if the file is not open, it passes the work to the save_as function
+    if not file_name:
+        save_as()
+    # if a file is open it will overwrite the the contents of a file with the current contents of the text area
+    else:
+        write_to_file(file_name)
+    return 'break'
+
+# implementing the save_as() function
+def save_as(event=None):
+    # this function uses a dialog by using asksaveasfilename and tires to get the filename
+    # provided by the user for the given filename
+    input_file_name = tkinter.filedialog.asksaveasfile(defaultextension='.txt',
+            filetypes=[('All Files', '*.*'), ('Text Documents', '*.txt')])
+    if input_file_name:
+        global file_name
+        file_name = input_file_name
+        # opens new file in write mode and writes the contents of the new text under this new filename
+        write_to_file(file_name)
+        # after writing, it closes the current file object and changes the title of the window
+        # to reflect the file name
+        root.title('{} - {}'.format(os.path.basename(file_name),PROGRAM_NAME))
+    return 'break'
+
+# implementing the write_to_file
+# this actually writes to the file
+def write_to_file(file_name):
+    # try get the contents of the text area and write the new content and save the file
+    try:
+        content = content_text.get(1.0, 'end')
+        with open(file_name, 'w') as the_file:
+            the_file.write(content)
+    except IOError:
+        pass
+
+# implementing the new_file function
+def new_file(event=None):
+    # changing the title of the root window to untitled
+    root.title('Untitled')
+    global file_name
+    # sets the value of the global var to be none
+    file_name = None
+    # delete all the content in the text area and creates a fresh document
+    content_text.delete(1.0, END)
+
 # adding the menu bar
 # my_menu = Menu(parent, **options)
 #adding menu bar in the widget
@@ -128,12 +205,12 @@ file_menu = Menu(menu_bar, tearoff=0)
 # all file menu items will be added here next
 menu_bar.add_cascade(label="File", menu=file_menu)
 # adding menu items
-file_menu.add_command(label='New', accelerator='Ctrl+N', compound='left', underline=1)
+file_menu.add_command(label='New', accelerator='Ctrl+N', compound='left', underline=1, command=new_file)
 # adding a line as a seperator between options
 file_menu.add_separator()
-file_menu.add_command(label='Open', accelerator='Ctrl+O', compound='left', underline=1)
-file_menu.add_command(label='Save', accelerator='Ctrl+S', compound='left', underline=1)
-file_menu.add_command(label='Save as', accelerator='Shift + Ctrl+S', compound='left', underline=1)
+file_menu.add_command(label='Open', accelerator='Ctrl+O', compound='left', underline=1, command=open_file)
+file_menu.add_command(label='Save', accelerator='Ctrl+S', compound='left', underline=1, command=save)
+file_menu.add_command(label='Save as', accelerator='Shift + Ctrl+S', compound='left', underline=1, command=save_as)
 file_menu.add_separator()
 file_menu.add_command(label='Exit', accelerator='Alt+F4', compound='left', underline=1)
 
@@ -235,7 +312,17 @@ content_text.bind('<Control-A>', select_all)
 content_text.bind('<Control-f>', find_all) # handling lowercase
 content_text.bind('<Control-F>', find_all) # handling uppercase
 
+# binding the function to the ctrl-N shortcut
+content_text.bind('<Control-n>', new_file)# handling lowercase
+content_text.bind('<Control-N>', new_file)# handling uppercase
 
+# binding the function to the ctrl-O shortcut
+content_text.bind('<Control-o>', open_file)# handling lowercase
+content_text.bind('<Control-O>', open_file)# handling uppercase
+
+# binding the function to the ctrl-s shortcut
+content_text.bind('<Control-s>', save)
+content_text.bind('<Control-S>', save)
 # all our code goes here
 
 root.mainloop()
