@@ -2,7 +2,7 @@
 # author: jade higgins
 # 09/02/2021
 
-from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, Button, END ,Toplevel, Label, Entry, IntVar, \
+from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, Button, END, Toplevel, Label, Entry, IntVar, \
     StringVar
 # from tkinter import *
 from tkinter import Tk
@@ -22,10 +22,25 @@ root = Tk()
 root.geometry('500x500')
 root.title(PROGRAM_NAME)
 
+# adding message boxes for about function
+def display_about_messagebox(event=None):
+    tkinter.messagebox.showinfo("About", "{} {}".format(PROGRAM_NAME, "\nThis was programmed by \n Jade Higgins"))
+
+# adding message box for the help function
+def display_help_messagebox(event=None):
+    tkinter.messagebox.showinfo("Help", "Help Book: what do you need help with??", icon='question')
+
+# adding a message box for exiting the editor
+def exit_editor(event=None):
+    # prompts user an Ok-cancel dialog to confirm the quit action
+    if tkinter.messagebox.askokcancel("Quit", "You Really Want to Quit?"):
+        root.destroy()
 
 # implementing the cut function
 def cut():
     content_text.event_generate("<<Cut>>")
+    # calling this function
+    on_content_changed()
     return "break"
 
 # implementing the copy function
@@ -36,27 +51,33 @@ def copy():
 #implementing the paste function
 def paste():
     content_text.event_generate("<<Paste>>")
+    # calling this function
+    on_content_changed()
     return "break"
 
 # implementing the Undo function
 def undo():
     content_text.event_generate("<<Undo>>")
+    # calling this function
+    on_content_changed()
     return "break"
 
 # implementing the redo function
 # the event var prevents TKinter from pasting info when using ctrl+y and instead redos the action
 def redo(event=None):
     content_text.event_generate("<<Redo>>")
+    # calling this function
+    on_content_changed()
     return 'break'
 
 # implementing the select all feature
 def select_all(event=None):
     # sel is used for selecting text. 1.0 and end means select beginning until the end
-    content_text.tag_add('sel', 1.0, 'end');
+    content_text.tag_add('sel', 1.0, 'end')
     return "break"
 
 #implementing the find all function
-def find_all(event=None):
+def find_text(event=None):
     # creating a new top level window to search for words
     search_toplevel = Toplevel(root)
     # giving the window a title
@@ -64,7 +85,7 @@ def find_all(event=None):
     # setting the window as a transient window so it can lie on top of the parent window
     search_toplevel.transient(root)
     # adding a label for the window
-    Label(search_toplevel, text="Find All:").grid(row=0, column=0, sticky='e')
+    Label(search_toplevel, text="Find Text:").grid(row=0, column=0, sticky='e')
     # adding an entry field
     search_entry_widget = Entry(search_toplevel, width=25)
     # positioning the entry field
@@ -77,7 +98,7 @@ def find_all(event=None):
     Checkbutton(search_toplevel, text='Ignore Case', variable=ignore_case_value).grid(row=1,column=1, sticky='e', padx=2,pady=2)
     # adding a button for find all - lambda can take a number of arguments ( like a small function
     # calls search_output
-    Button(search_toplevel, text='Find All', underline=0,
+    Button(search_toplevel, text='Find Text', underline=0,
            command=lambda: search_output(search_entry_widget.get(), ignore_case_value.get(),
                                           content_text, search_toplevel, search_entry_widget)
            ).grid(row=0,column=2, sticky='e' + 'w', padx=2, pady=2)
@@ -146,6 +167,8 @@ def open_file(event=None):
             # we use the context manager ( the with command) which takes care of closing
             # the file properly for us, even in the case of an exception
             content_text.insert(1.0, _file.read())
+    # calling this function
+    on_content_changed()
 
 # implementing the save function
 # this function checks whether a file is open
@@ -195,6 +218,34 @@ def new_file(event=None):
     file_name = None
     # delete all the content in the text area and creates a fresh document
     content_text.delete(1.0, END)
+    # calling this function
+    on_content_changed()
+
+# function to check whether lines have been added or removed from the text area
+# and accordingly update line numbers
+def on_content_changed(event=None):
+    # calling the function
+    update_line_numbers()
+
+# implementing the function update_line_numbers
+def update_line_numbers(event=None):
+    pass
+
+# implementing get_line_numbers which returns a string containing all the numbers
+# until the last row, separated by line breaks
+def get_line_numbers():
+    
+
+# images from icons folder for shortcut bar
+new_file_icon = PhotoImage(file='icons/new_file.gif')
+open_file_icon = PhotoImage(file='icons/open_file.gif')
+save_file_icon = PhotoImage(file='icons/save.gif')
+cut_icon = PhotoImage(file='icons/cut.gif')
+copy_icon = PhotoImage(file='icons/copy.gif')
+paste_icon = PhotoImage(file='icons/paste.gif')
+undo_icon = PhotoImage(file='icons/undo.gif')
+redo_icon = PhotoImage(file='icons/redo.gif')
+find_icon = PhotoImage(file='icons/find_text.gif')
 
 # adding the menu bar
 # my_menu = Menu(parent, **options)
@@ -205,36 +256,36 @@ file_menu = Menu(menu_bar, tearoff=0)
 # all file menu items will be added here next
 menu_bar.add_cascade(label="File", menu=file_menu)
 # adding menu items
-file_menu.add_command(label='New', accelerator='Ctrl+N', compound='left', underline=1, command=new_file)
+file_menu.add_command(label='New', accelerator='Ctrl+N', compound='left', image=new_file_icon, underline=1, command=new_file)
 # adding a line as a seperator between options
 file_menu.add_separator()
-file_menu.add_command(label='Open', accelerator='Ctrl+O', compound='left', underline=1, command=open_file)
-file_menu.add_command(label='Save', accelerator='Ctrl+S', compound='left', underline=1, command=save)
+file_menu.add_command(label='Open', accelerator='Ctrl+O', compound='left', image=open_file_icon, underline=1, command=open_file)
+file_menu.add_command(label='Save', accelerator='Ctrl+S', compound='left',image=save_file_icon, underline=1, command=save)
 file_menu.add_command(label='Save as', accelerator='Shift + Ctrl+S', compound='left', underline=1, command=save_as)
 file_menu.add_separator()
-file_menu.add_command(label='Exit', accelerator='Alt+F4', compound='left', underline=1)
+file_menu.add_command(label='Exit', accelerator='Alt+F4', compound='left', underline=1, command=exit_editor)
 
 # adding edit label to the menu bar
 edit_menu = Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label='Edit', menu=edit_menu)
 # adding menu items
-edit_menu.add_command(label='Undo', accelerator='Ctrl+Z', compound='left', command=undo)
+edit_menu.add_command(label='Undo', accelerator='Ctrl+Z', compound='left', image=undo_icon, command=undo)
 edit_menu.add_separator()
-edit_menu.add_command(label='Redo', accelerator='Ctrl+Y', compound='left', underline=1, command=redo)
+edit_menu.add_command(label='Redo', accelerator='Ctrl+Y', compound='left', image=redo_icon, underline=1, command=redo)
 edit_menu.add_separator()
 
 # calls the function cut() using command to use this function
-edit_menu.add_command(label='Cut', accelerator='Ctrl+X', compound='left', underline=1, command=cut)
+edit_menu.add_command(label='Cut', accelerator='Ctrl+X', compound='left', image=cut_icon, underline=1, command=cut)
 
 # calls the function copy() using the command to use this function
-edit_menu.add_command(label='Copy', accelerator='Ctrl+C', compound='left', underline=1, command=copy)
+edit_menu.add_command(label='Copy', accelerator='Ctrl+C', compound='left', image=cut_icon, underline=1, command=copy)
 
 # calls the function paste() using the command to use this function
-edit_menu.add_command(label='Paste', accelerator='Ctrl+V', compound='left', underline=1, command=paste)
+edit_menu.add_command(label='Paste', accelerator='Ctrl+V', compound='left', image=paste_icon, underline=1, command=paste)
 
 edit_menu.add_separator()
 # adding a callback to the find_text function
-edit_menu.add_command(label='Find', accelerator='Ctrl+F', compound='left', underline=1, command=find_all)
+edit_menu.add_command(label='Find', accelerator='Ctrl+F', compound='left', image=find_icon, underline=1, command=find_text)
 edit_menu.add_separator()
 # adding a callback to the select function
 edit_menu.add_command(label='Select All', accelerator='Ctrl+A', compound='left', underline=1, command=select_all)
@@ -275,15 +326,30 @@ menu_bar.add_cascade(label='View', menu=view_menu)
 # add about label to the menu bar
 about_menu = Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label='About', menu=about_menu)
-about_menu.add_command(label='About', compound='left', underline=1)
+about_menu.add_command(label='About', compound='left', underline=1, command=display_about_messagebox)
 about_menu.add_separator()
-about_menu.add_command(label='Help', compound='left', underline=1)
+about_menu.add_command(label='Help', compound='left', underline=1, command=display_help_messagebox)
 # configuring the menu bar
 root.config(menu=menu_bar)
 
 # adding a frame widget to hold the shortcut icons
-shortcut_bar = Frame(root, height=25, background='light sea green')
+shortcut_bar = Frame(root, height=27)
 shortcut_bar.pack(expand='no', fill='x')
+
+# adding shortcut icons
+# creating a tuple of icons
+icons = ('new_file', 'open_file', 'save', 'cut', 'copy', 'paste', 'undo',
+         'redo', 'find_text')
+# loop through the list by creating a button widget, adding an image to the button
+for i, icon in enumerate(icons):
+    tool_bar_icon = PhotoImage(file='icons/{}.gif'.format(icon))
+    # before adding callback command, we have to convert the string to an equivalent expression
+    # using the eval command
+    cmd = eval(icon)
+    tool_bar = Button(shortcut_bar, image=tool_bar_icon, command=cmd)
+    tool_bar.image = tool_bar_icon
+    tool_bar.pack(side='left')
+
 
 # adding a text widget for the line number bar
 line_number_bar = Text(root, width=4, padx=3, takefocus=0, border=0, background='khaki', state='disabled', wrap='none')
@@ -308,9 +374,9 @@ content_text.bind('Control-Y', redo) # handling Uppercase
 content_text.bind('<Control-a>', select_all) # handling lowercase
 content_text.bind('<Control-A>', select_all)
 
-# binding the function to the ctrl-f quirk for find all function
-content_text.bind('<Control-f>', find_all) # handling lowercase
-content_text.bind('<Control-F>', find_all) # handling uppercase
+# binding the function to the ctrl-f quirk for find text function
+content_text.bind('<Control-f>', find_text) # handling lowercase
+content_text.bind('<Control-F>', find_text) # handling uppercase
 
 # binding the function to the ctrl-N shortcut
 content_text.bind('<Control-n>', new_file)# handling lowercase
@@ -323,8 +389,17 @@ content_text.bind('<Control-O>', open_file)# handling uppercase
 # binding the function to the ctrl-s shortcut
 content_text.bind('<Control-s>', save)
 content_text.bind('<Control-S>', save)
+
+# binding the function to the KeyPress-F1 shortcut
+content_text.bind('<KeyPress-F1>', display_help_messagebox)
+
+# binding the function to any keypress so it can update the function
+content_text.bind('<Any-KeyPress>', on_content_changed)
+
 # all our code goes here
 
+# overriding the the close button and redirecting it to the exit_editor()
+root.protocol('WM_DELETE_WINDOW', exit_editor)
 root.mainloop()
 
 
