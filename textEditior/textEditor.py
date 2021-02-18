@@ -234,7 +234,9 @@ def update_line_numbers(event=None):
 # implementing get_line_numbers which returns a string containing all the numbers
 # until the last row, separated by line breaks
 def get_line_numbers():
-    
+    output = ''
+    # previously we set show_line_no to be 1
+    # if show_line_no is et to 1 then we calculate the last line 
 
 # images from icons folder for shortcut bar
 new_file_icon = PhotoImage(file='icons/new_file.gif')
