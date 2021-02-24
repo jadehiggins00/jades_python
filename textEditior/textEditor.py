@@ -2,7 +2,7 @@
 # author: jade higgins
 # 09/02/2021
 
-from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, Button, END, Toplevel, Label, Entry, IntVar, \
+from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, Button, END, Toplevel, Label, Entry, IntVar,BooleanVar,\
     StringVar
 # from tkinter import *
 from tkinter import Tk
@@ -21,6 +21,30 @@ root = Tk()
 # establishing the size of the window
 root.geometry('500x500')
 root.title(PROGRAM_NAME)
+
+# this is called if the user unchecks highlight button
+def undo_highlight(event=None):
+    # removes the active_line tag from the entire text area
+    content_text.tag_remove('active_line', 1.0, 'end')
+
+# this called if the user presses the button to and it is checked
+# after 100 milliseconds it calls the toggle_highlight function to check if it still should be highlighted
+def highlight_line(interval=100):
+    content_text.tag_remove('active_line', 1.0, 'end')
+    content_text.tag_add('active_line', 'insert linestart', 'insert lineend+1c')
+    content_text.after(interval, toggle_highlight)
+
+
+# everytime the user checks highlight current line, this function is called
+# this function checks whether the menu item is checked. if it is checked, it invokes
+# the highlight_line function, otherwise if it unchecked it calls the undo_highlight
+def toggle_highlight(event=None):
+    if to_highlight_line.get():
+        highlight_line()
+    else:
+        undo_highlight()
+
+
 
 # adding message boxes for about function
 def display_about_messagebox(event=None):
@@ -229,14 +253,33 @@ def on_content_changed(event=None):
 
 # implementing the function update_line_numbers
 def update_line_numbers(event=None):
-    pass
+    # updates the text widget that displays the line using the string
+    # output from the previous function
+    line_numbers = get_line_numbers()
+    # string added to the left label by using config
+    line_number_bar.config(state='normal')
+    line_number_bar.delete('1.0', 'end')
+    line_number_bar.insert('1.0', line_numbers)
+    line_number_bar.config(state='disabled')
 
 # implementing get_line_numbers which returns a string containing all the numbers
 # until the last row, separated by line breaks
 def get_line_numbers():
     output = ''
     # previously we set show_line_no to be 1
-    # if show_line_no is et to 1 then we calculate the last line 
+    # if show_line_no is set to 1 then we calculate the last line
+    if show_line_no.get():
+        # here we create a text string consisting of numbers from 1 to the number
+        # of the last line
+        row, col = content_text.index("end").split('.')
+        # each number is seperated by a line break
+        for i in range(1, int(row)):
+            output += str(i)+ '\n'
+    # if show_line_number is unchecked in the menu, the varibale text remains blank
+    # thereby displaying no numbers
+    return output
+
+
 
 # images from icons folder for shortcut bar
 new_file_icon = PhotoImage(file='icons/new_file.gif')
@@ -299,6 +342,10 @@ view_menu = Menu(menu_bar, tearoff=0)
 show_line_no = IntVar()
 show_line_no.set(1)
 view_menu.add_checkbutton(label='Show Line Numbers', variable=show_line_no)
+# adding a button to give the user the option to higlight a line
+# adding a callback to the button
+to_highlight_line = BooleanVar()
+view_menu.add_checkbutton(label='Highlight Current Line', onvalue=1, offvalue=0, variable=to_highlight_line, command=toggle_highlight)
 
 # adding a themes menu
 themes_menu = Menu(menu_bar, tearoff=0)
@@ -397,6 +444,8 @@ content_text.bind('<KeyPress-F1>', display_help_messagebox)
 
 # binding the function to any keypress so it can update the function
 content_text.bind('<Any-KeyPress>', on_content_changed)
+# configuring the tag named active_line to have a different background colour
+content_text.tag_configure('active_line', background='ivory2')
 
 # all our code goes here
 
