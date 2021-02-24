@@ -2,7 +2,7 @@
 # author: jade higgins
 # 09/02/2021
 
-from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, Button, END, Toplevel, Label, Entry, IntVar,BooleanVar,\
+from tkinter import Tk, PhotoImage, Menu, Frame, Text, Scrollbar, Checkbutton, Button, END, Toplevel, Label, Entry, IntVar, INSERT,  BooleanVar,\
     StringVar
 # from tkinter import *
 from tkinter import Tk
@@ -21,6 +21,41 @@ root = Tk()
 # establishing the size of the window
 root.geometry('500x500')
 root.title(PROGRAM_NAME)
+
+# implementing the pop up menu for the right mouse click
+def show_popup_menu(event):
+    # can now right-click anywhere on the text widget in the editor to open the contextual menu
+    popup_menu.tk_popup(event.x_root, event.y_root)
+
+
+# implementing the change_theme function to handle the changing of themes
+def change_themes(event=None):
+    # fetching the theme choice from the user
+    selected_theme = theme_choice.get()
+    # fetching colours from dictionary and setting the users choice as the colour
+    fg_bg_colors = color_schemes.get(selected_theme)
+    # splits the colour into two components and applies one colour to each to FG and BG using widget.config
+    foreground_colour, background_color = fg_bg_colors.split('.')
+    content_text.config(background=background_color, foreground=foreground_colour)
+
+
+#if the cursor bar is checked then we get the row and col
+def show_cursor_info_bar():
+    show_cursor_info_checked = show_cursor_info.get()
+    if show_cursor_info_checked:
+        cursor_info_bar.pack(expand='no', fill=None, side='right', anchor='se')
+    else:
+        cursor_info_bar.pack_forget()
+
+def update_cursor_info_bar(event=None):
+    # we gte the current row and col position by using the index(insert) method
+    row,col = content_text.index(INSERT).split('.')
+    line_num, col_num = str(int(row)), str(int(col)+1) # col starts at 0
+    # we then update the current labels with the latest row and col of the cursor
+    infotext = 'Line: {0} | Column: {1}'.format(line_num,col_num)
+    cursor_info_bar.config(text=infotext)
+
+
 
 # this is called if the user unchecks highlight button
 def undo_highlight(event=None):
@@ -250,6 +285,8 @@ def new_file(event=None):
 def on_content_changed(event=None):
     # calling the function
     update_line_numbers()
+    # calling this function because this needs to be updated on every keystroke
+    update_cursor_info_bar()
 
 # implementing the function update_line_numbers
 def update_line_numbers(event=None):
@@ -342,6 +379,13 @@ view_menu = Menu(menu_bar, tearoff=0)
 show_line_no = IntVar()
 show_line_no.set(1)
 view_menu.add_checkbutton(label='Show Line Numbers', variable=show_line_no)
+
+show_cursor_info =IntVar()
+show_cursor_info.set(1)
+# callback for show_cursor_info_bar function
+view_menu.add_checkbutton(label='Show Cursor Location at Bottom', variable=show_cursor_info, command=show_cursor_info_bar)
+
+
 # adding a button to give the user the option to higlight a line
 # adding a callback to the button
 to_highlight_line = BooleanVar()
@@ -350,6 +394,7 @@ view_menu.add_checkbutton(label='Highlight Current Line', onvalue=1, offvalue=0,
 # adding a themes menu
 themes_menu = Menu(menu_bar, tearoff=0)
 view_menu.add_cascade(label='Themes', menu=themes_menu)
+
 
 # colour scheme is defined with dictionary elements
 color_schemes = {
@@ -368,8 +413,8 @@ theme_choice = StringVar()
 theme_choice.set('Default')
 # for loop to through dictionary
 for k in sorted(color_schemes):
-    # adding a radio button
-    themes_menu.add_radiobutton(label=k, variable=theme_choice)
+    # adding a radio button and adding a callback to the chnage_theme function
+    themes_menu.add_radiobutton(label=k, variable=theme_choice, command=change_themes)
 menu_bar.add_cascade(label='View', menu=view_menu)
 
 # add about label to the menu bar
@@ -401,7 +446,7 @@ for i, icon in enumerate(icons):
 
 
 # adding a text widget for the line number bar
-line_number_bar = Text(root, width=4, padx=3, takefocus=0, border=0, background='khaki', state='disabled', wrap='none')
+line_number_bar = Text(root, width=4, padx=3, takefocus=0, border=0, background='ivory2', state='disabled', wrap='none')
 line_number_bar.pack(side='left', fill='y')
 
 # adding the main text widget
@@ -414,6 +459,11 @@ scroll_bar = Scrollbar(content_text)
 content_text.configure(yscrollcommand=scroll_bar.set)
 scroll_bar.configure(command=content_text.yview)
 scroll_bar.pack(side='right', fill='y')
+
+# adding the cursor info label
+cursor_info_bar = Label(content_text, text='Line: 1 | Column: 1')
+cursor_info_bar.pack(expand='NO',fill=None, side='right', anchor='se')
+
 
 # handling redo quirk
 content_text.bind('<Control-y>', redo) # handling lowercase
@@ -446,6 +496,19 @@ content_text.bind('<KeyPress-F1>', display_help_messagebox)
 content_text.bind('<Any-KeyPress>', on_content_changed)
 # configuring the tag named active_line to have a different background colour
 content_text.tag_configure('active_line', background='ivory2')
+
+# setting up the pop-up menu
+popup_menu = Menu(content_text)
+for i in ('cut', 'copy', 'paste', 'undo', 'redo'):
+    cmd = eval(i)
+    popup_menu.add_command(label=i, compound='left', command=cmd)
+popup_menu.add_separator()
+popup_menu.add_command(label='Select All', underline=7, command=select_all)
+
+
+# binding the function to the right click of a mouse
+content_text.bind('<Button-3>', show_popup_menu)
+content_text.focus_set()
 
 # all our code goes here
 
