@@ -1,7 +1,11 @@
-public class Sample1 {
-    
-    public static void main(String[] args){
 
-        System.out.println("hi ");
-    }//end main
+import processing.core.PApplet;
+public class Sample1 extends PApplet {
+    
+   public void settings(){
+
+    size(500,500)
+
+
+   }
 }//end class
