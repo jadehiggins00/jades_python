@@ -36,16 +36,55 @@ def main_account_screen():
     Label(text="").pack()
 
     # creating the Login Button
-    Button(text='Login', bg='yellow', height='2', width='30').pack()
+    Button(text='Login', bg='yellow', height='2', width='30', command=login).pack()
     # this is used to leave a space inbetween the buttons
     Label(text='').pack()
 
     # creating the register button
-
     Button(text='Register', bg='yellow', height='2', width='30', command=register).pack()
+
 
     # this starts the gui
     main_screen.mainloop()
+
+# creating a login window using a top level widget
+def login():
+
+    login_screen = Toplevel(main_screen)
+    login_screen.title("Login")
+    login_screen.geometry('300x250')
+
+    # label at the top of the window
+    Label(login_screen, text='Please Enter your Details Below to Login').pack()
+    Label(login_screen,text='').pack()
+
+    global username_verify
+    global password_verify
+
+    # setting these vars to text vars
+    username_verify = StringVar()
+    password_verify = StringVar()
+
+    # label for username
+    Label(login_screen, text='Username * ').pack()
+    # creating username entry widget
+    username_login_entry = Entry(login_screen, textvariable=username_verify)
+    username_login_entry.pack()
+    Label(login_screen, text='').pack()
+
+    # label and entry for password
+    Label(login_screen, text='Password * ').pack()
+    password_login_entry = Entry(login_screen, textvariable=password_verify, show='*')
+    password_login_entry.pack()
+    Label(login_screen, text='').pack()
+
+    # login button
+    Button(login_screen, text='Login', width=10, height=1, command=login_verification).pack()
+
+# login verification
+def login_verification():
+    print('working..')
+
 
 def register():
     # here we are creating a toplevel widget
