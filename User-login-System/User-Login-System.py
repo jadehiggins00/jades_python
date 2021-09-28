@@ -50,6 +50,7 @@ def main_account_screen():
 # creating a login window using a top level widget
 def login():
 
+    global login_screen
     login_screen = Toplevel(main_screen)
     login_screen.title("Login")
     login_screen.geometry('300x250')
@@ -60,6 +61,8 @@ def login():
 
     global username_verify
     global password_verify
+    global username_login_entry
+    global password_login_entry
 
     # setting these vars to text vars
     username_verify = StringVar()
@@ -85,6 +88,75 @@ def login():
 def login_verification():
     print('working..')
 
+    # get username and password
+    username1 = username_verify.get()
+    password1 = password_verify.get()
+
+    # this will delete the entry after the login
+    # button has been pressed
+    username_login_entry.delete(0, END)
+    password_login_entry.delete(0, END)
+
+    # the method listdir() returns a list containing
+    # the names of the entries given in the directory
+    # given by the path
+    list_of_files = os.listdir()
+
+    # defining verifications conditions
+    if username1 in list_of_files:
+        # open the file in read mode
+        file1 = open(username1, 'r')
+
+        # read the file, as splitlines() actually splits
+        # on the newline character, the newline character is not
+        # left hanging at the end of each line.
+        verify = file1.read().splitlines()
+
+        if password1 in verify:
+            login_success()
+
+        else:
+            password_not_recognised()
+
+    # if the user is not found in the files
+    else:
+        user_not_found()
+
+# login success function will show a popup window
+# to indicate a successful login. it will only work
+# if the entries are valid
+def login_success():
+
+    # make this var global
+    global login_success_screen
+
+    # creating the top level window
+    login_success_screen = Toplevel(login_screen)
+    login_success_screen.title("Success!")
+    login_success_screen.geometry('150x100')
+    Label(login_success_screen, text='Login Success').pack()
+
+    # creating the OK button
+    Button(login_success_screen, text='OK', command=delete_login_success).pack()
+
+# function to delete the popup window
+def delete_login_success():
+    login_success_screen.destroy()
+
+# creating the user not found function
+def user_not_found():
+    global user_not_found_screen
+
+    # creating the top level screen
+    user_not_found_screen = Toplevel(login_screen)
+    user_not_found_screen.title('User Not Found')
+    user_not_found_screen.geometry('150x100')
+    Label(user_not_found_screen,text='User Not Found').pack()
+    Button(user_not_found_screen, text='OK',command=delete_user_not_found_screen).pack()
+
+# this function destroys the user not found screen
+def delete_user_not_found_screen():
+    user_not_found_screen.destroy()
 
 def register():
     # here we are creating a toplevel widget
@@ -156,7 +228,7 @@ def register_user():
     password_entry.delete(0, END)
 
     # creating a label to inform the user of success
-    Label(register_screen,text='Registeration Success', fg='green', font=('Calibri',11)).pack()
+    Label(register_screen,text='Registration Success', fg='green', font=('Calibri',11)).pack()
 
 # calling the main_account_screen function
 main_account_screen()
