@@ -14,29 +14,42 @@
 
 # reading the text file that contains 10 sudoku's
 
+class sudoku:
 
-def open_text_file():
-    f = open("C:\\Users\jadeh\PycharmProjects\Sudoku\Assignment 2 sudoku.txt", "r")
-    # print(f.read())
-    list_of_lists = []
-    for line in f:
-        stripped_line = line.splitlines()
-        #line_list = stripped_line
-        list_of_lists.append(stripped_line)
-    f.close()
-    print(list_of_lists)
+    def __init__(self):
+    
 
 
-def sudoku_board():
+    def open_text_file(self):
+        f = open("C:\\Users\jadeh\PycharmProjects\Sudoku\Assignment 2 sudoku.txt", "r")
+        # print(f.read())
+        list_of_lists = []
+        for line in f:
+            stripped_line = line.splitlines()
+            #line_list = stripped_line
+            list_of_lists.append(stripped_line)
+        f.close()
+        print(list_of_lists)
 
-    nums = []
-    for row in range(3):
-        nums.append([])
-        for col in range(0,81,9):
-            nums[row].append(col)
-    print("3x3 grid with numbers")
-    print(nums)
 
-sudoku_board()
+    def sudoku_board(self):
 
-#pen_text_file()
+        nums = []
+        for row in range(3):
+            nums.append([])
+
+            for col in range(1,4):
+                #subgrid = []
+                #for i in range(3):
+                    #for j in range(3):
+                        #subgrid.append([3*row+i][3*col+j])
+                nums[row].append(col)
+
+        print("3x3 grid with numbers")
+       # print(subgrid)
+        print(nums)
+
+#sudoku_board()
+s = sudoku()
+s.sudoku_board()
+#open_text_file()
