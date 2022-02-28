@@ -1,0 +1,4 @@
+C:\Users\jadeh\Documents\Python-Projects\jades_python\opengl-examples\OpenglCrashCourse\x64\Debug\OpenglCrashCourse.vcxproj.MdMergeInputs.cache
+C:\Users\jadeh\Documents\Python-Projects\jades_python\opengl-examples\OpenglCrashCourse\x64\Debug\OpenglCrashCourse.vcxproj.cppwinrt_plat.cache
+C:\Users\jadeh\Documents\Python-Projects\jades_python\opengl-examples\OpenglCrashCourse\x64\Debug\OpenglCrashCourse.vcxproj.cppwinrt_comp.cache
+C:\Users\jadeh\Documents\Python-Projects\jades_python\opengl-examples\OpenglCrashCourse\x64\Debug\OpenglCrashCourse.exe
