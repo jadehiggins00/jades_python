@@ -8,6 +8,7 @@ class Sudoku:
     #     # we will now create the board
     #     self.row = [] # will contain 9 rows
     #     self.col = [] # will contain 9 columns
+
 #
 #
 #     def is_valid(self, list_of_lists, row, col, num):
@@ -44,11 +45,11 @@ class Sudoku:
         file.close()
 
         # converting the list to a numpy array
-        #arr = numpy.array(list_of_lists)
+       # arr = numpy.array(list_of_lists)
 
         #print("array: ", arr)
         print(self.list_of_lists)
-        self.possible(self.list_of_lists)
+
 
     def possible(self, row, col, num):
         print('working')
@@ -72,13 +73,24 @@ class Sudoku:
         return True
 
 
-    def solve(self,):
-        
+    def solve(self):
+        # checking for the empty fields
+        for row in range(0,9):
+            for col in range(0,9):
+                if self.list_of_lists[row][col] == 0:
+                    for num in range(1,10):
+                        if self.possible(row, col, num):
+                            self.list_of_lists[row][col] = num
+                            self.solve()
+                            self.list_of_lists = 0
+                    return
+        print(self.list_of_lists)
 
 #
 #
 #
 s = Sudoku()
-s.open_text_file()
+
+s.solve()
 # #s.is_valid()
 # s.open_text_file()
