@@ -1,2 +1,2 @@
-# jades_Main_Respository
-# This is my personal Git Repo 
+# Jades Projects
+# This repository contains my personal projects. 
