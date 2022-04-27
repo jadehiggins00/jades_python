@@ -18,6 +18,7 @@ class DrumMachine:
         self.root = root
         self.root.title(PROGRAM_NAME)
         self.init_gui()
+        
 
 
 
@@ -80,6 +81,11 @@ class DrumMachine:
 
         # label for bpu
         Label(topbar_frame, text='BPUs').grid(row=0, column=6)
+        # adding a spin box
+        self.bpu_widget = Spinbox(topbar_frame, from_=1, to=MAX_BPU, width=5, command=self.on_bpu_changed)
+        self.bpu_widget.grid(row=0, column=7)
+        self.bpu_widget.delete(0, "end")
+        self.bpu_widget.insert(0,INITIAL_BPU)
 
     def create_left_drum_loader(self):
         pass
@@ -90,6 +96,8 @@ class DrumMachine:
     def create_play_bar(self):
         pass
 
+    def on_bpu_changed(self):
+        pass
 
     # define all 4 methods within this gui method
     def init_gui(self):
